@@ -1,0 +1,8 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": { "quota_text": {
+    "type": "stdio", "command": "cmd.exe",
+    "args": ["/d", "/c", "${PLUGIN_ROOT}/launch.cmd"],
+    "cwd": "${PLUGIN_ROOT}"
+  }}
+}
