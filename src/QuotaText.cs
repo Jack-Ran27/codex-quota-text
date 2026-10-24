@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
-[assembly: System.Reflection.AssemblyVersion("1.2.1.0")]
-[assembly: System.Reflection.AssemblyFileVersion("1.2.1.0")]
+[assembly: System.Reflection.AssemblyVersion("1.2.2.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.2.2.0")]
 
 internal static class Program
 {
@@ -173,7 +173,7 @@ internal sealed class QuotaForm : Form
         {
             var state = new {visible=Visible && Native.IsWindowVisible(Handle), percent=label.Percent, resetDate=label.Date, resetTime=label.Time, stale=label.Stale, updatedAt=label.UpdatedAt,
                 left=Left,top=Top,width=Width,height=Height, target=target, error=lastError, processId=Process.GetCurrentProcess().Id,
-                windowHandle=Handle.ToInt64(), version="1.2.1", noActivate=true, clickThrough=true};
+                windowHandle=Handle.ToInt64(), version="1.2.2", noActivate=true, clickThrough=true};
             File.WriteAllText(Path.Combine(Program.Runtime,"status.json"),new JavaScriptSerializer().Serialize(state));
             if (shown)
                 using(Bitmap bitmap=new Bitmap(Math.Max(1,Width),Math.Max(1,Height)))
