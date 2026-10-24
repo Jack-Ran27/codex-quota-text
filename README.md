@@ -2,9 +2,9 @@
 
 在 GPT 桌面版左下角看一眼，就知道还剩多少额度、什么时候重置。
 
-这是一个 Windows 本地小组件，当前为 **v1.2.3-beta.1 测试版**。它不占任务栏，也不用单独打开看板。
+这是一个 Windows 本地小组件，当前为 **v1.2.4-beta.1 测试版**。它不占任务栏，也不用单独打开看板。
 
-[下载 Windows 安装包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.3-beta.1/GPT-Codex-Quota-Display-v1.2.3-beta.1-Windows-x64.zip) · [完整源码包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.3-beta.1/GPT-Codex-Quota-Display-v1.2.3-beta.1-Source.zip) · [版本页面](https://github.com/Jack-Ran27/codex-quota-text/releases)
+[下载 Windows 安装包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.4-beta.1/GPT-Codex-Quota-Display-v1.2.4-beta.1-Windows-x64.zip) · [完整源码包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.4-beta.1/GPT-Codex-Quota-Display-v1.2.4-beta.1-Source.zip) · [版本页面](https://github.com/Jack-Ran27/codex-quota-text/releases)
 
 显示示例（示意数据）：
 
@@ -35,6 +35,8 @@ Windows x64、.NET Framework 4.8，以及已登录的 GPT/Codex 桌面版。额�
 3. 打开 GPT，查看左下角文字。
 
 关闭时，右键点击额度文字区域，选择“关闭本次显示”。如不希望以后自动运行，选择“取消自动启动并关闭”。
+
+点击菜单外的空白处或切换到其他程序可收起菜单，也可以按 Esc。
 
 Windows 开始菜单中也提供“关闭额度显示器”和“启动额度显示器”入口，关闭后可随时再次启动。“关闭本次显示”会退出本工具，本次重新打开 GPT 不会自动恢复；登录启动项仍保留，下一次登录 Windows 后会再运行。
 
