@@ -1,6 +1,6 @@
 # 使用说明与许可
 
-Quota Text / 额度小字按 MIT 许可证提供，完整条款见 `LICENSE`。
+GPT/Codex Desktop Quota Display / GPT/Codex 桌面版额度显示器按 MIT 许可证提供，完整条款见 `LICENSE`。
 
 这是第三方测试版工具，不隶属于 OpenAI，也没有获得 OpenAI 的官方认证。只验证过说明中列出的环境，其他客户端版本、布局或缩放可能需要适配。
 

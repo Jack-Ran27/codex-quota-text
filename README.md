@@ -1,10 +1,10 @@
-# 额度小字 · Quota Text
+# GPT/Codex 桌面版额度显示器
 
 在 GPT 桌面版左下角看一眼，就知道还剩多少额度、什么时候重置。
 
-这是一个 Windows 本地小组件，当前为 **v1.2.1-beta.1 测试版**。它不占任务栏，也不用单独打开看板。
+这是一个 Windows 本地小组件，当前为 **v1.2.2-beta.1 测试版**。它不占任务栏，也不用单独打开看板。
 
-[下载 Windows 安装包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.1-beta.1/QuotaText-v1.2.1-beta.1-Windows-x64.zip) · [完整源码包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.1-beta.1/QuotaText-v1.2.1-beta.1-Source.zip) · [版本页面](https://github.com/Jack-Ran27/codex-quota-text/releases)
+[下载 Windows 安装包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.2-beta.1/GPT-Codex-Quota-Display-v1.2.2-beta.1-Windows-x64.zip) · [完整源码包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.2-beta.1/GPT-Codex-Quota-Display-v1.2.2-beta.1-Source.zip) · [版本页面](https://github.com/Jack-Ran27/codex-quota-text/releases)
 
 显示示例（示意数据）：
 

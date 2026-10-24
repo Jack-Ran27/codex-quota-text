@@ -1,6 +1,6 @@
 # 隐私说明
 
-额度小字 / Quota Text 是本地运行的第三方 Windows 工具，没有自己的云端数据服务。
+GPT/Codex 桌面版额度显示器 / GPT/Codex Desktop Quota Display 是本地运行的第三方 Windows 工具，没有自己的云端数据服务。
 
 ## 会使用什么数据
 
