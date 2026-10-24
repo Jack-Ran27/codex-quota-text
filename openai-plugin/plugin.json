@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "quota-text",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Show remaining Codex quota and reset time as small text on Windows.",
   "author": { "name": "Jack-Ran27" },
   "homepage": "https://github.com/Jack-Ran27/codex-quota-text",
