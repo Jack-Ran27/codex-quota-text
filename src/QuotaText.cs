@@ -10,14 +10,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
-[assembly: System.Reflection.AssemblyVersion("1.2.2.0")]
-[assembly: System.Reflection.AssemblyFileVersion("1.2.2.0")]
+[assembly: System.Reflection.AssemblyVersion("1.2.3.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.2.3.0")]
 
 internal static class Program
 {
     internal static readonly string Root = AppDomain.CurrentDomain.BaseDirectory;
     internal static readonly string Runtime = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodexQuotaText", "state");
+    internal const string ProductName = "GPT/Codex 桌面版额度显示器";
+    internal static void DisableStartup()
+    {
+        string installed = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "CodexQuotaText", "QuotaText.exe");
+        using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true))
+        {
+            if (key != null && String.Equals(Convert.ToString(key.GetValue("CodexQuotaText")), "\"" + installed + "\"", StringComparison.OrdinalIgnoreCase))
+                key.DeleteValue("CodexQuotaText", false);
+        }
+    }
     [STAThread]
     private static void Main(string[] args)
     {
@@ -112,6 +123,7 @@ internal sealed class QuotaForm : Form
 {
     private readonly System.Windows.Forms.Timer timer;
     private readonly EventWaitHandle stop;
+    private readonly ContextMenuStrip menu;
     private QuotaLabel label = new QuotaLabel();
     private DateTime nextRead = DateTime.MinValue;
     private DateTime lastState = DateTime.MinValue;
@@ -122,10 +134,23 @@ internal sealed class QuotaForm : Form
     public QuotaForm(EventWaitHandle stopEvent)
     {
         stop = stopEvent;
-        Text = "CodexQuotaText"; Name = "CodexQuotaText";
+        Text = Program.ProductName; Name = "CodexQuotaText";
         FormBorderStyle = FormBorderStyle.None; ShowInTaskbar = false;
         StartPosition = FormStartPosition.Manual; AutoScaleMode = AutoScaleMode.None;
-        BackColor = Color.FromArgb(32,32,32); TransparencyKey = BackColor;
+        // Keep the whole small rectangle clickable, including the spaces between letters.
+        BackColor = Color.FromArgb(32,32,32); TransparencyKey = Color.Fuchsia;
+        Cursor = Cursors.Hand;
+        AccessibleName = Program.ProductName;
+        AccessibleDescription = "右键打开菜单，可关闭显示或取消自动启动。";
+        menu = new ContextMenuStrip();
+        menu.Items.Add(Program.ProductName).Enabled = false;
+        menu.Items.Add("版本 1.2.3").Enabled = false;
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("关闭本次显示", null, delegate { Close(); });
+        menu.Items.Add("取消自动启动并关闭", null, delegate {
+            try { Program.DisableStartup(); Close(); }
+            catch (Exception ex) { MessageBox.Show("未能取消自动启动：" + ex.Message, Program.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        });
         DoubleBuffered = true;
         IntPtr unused = Handle;
         timer = new System.Windows.Forms.Timer(); timer.Interval = 300;
@@ -134,20 +159,23 @@ internal sealed class QuotaForm : Form
     protected override bool ShowWithoutActivation { get { return true; } }
     protected override CreateParams CreateParams
     {
-        get { CreateParams p = base.CreateParams; p.ExStyle &= ~0x00040000; p.ExStyle |= 0x08000000 | 0x00000020 | 0x00080000 | 0x00000080; return p; }
+        get { CreateParams p = base.CreateParams; p.ExStyle &= ~(0x00040000 | 0x00000020); p.ExStyle |= 0x08000000 | 0x00080000 | 0x00000080; return p; }
     }
     protected override void SetVisibleCore(bool value) { base.SetVisibleCore(value && allowVisible); }
     private void Tick(object sender, EventArgs e)
     {
         if (stop.WaitOne(0)) { Close(); return; }
         target = Native.FindTarget();
-        bool active = target != null && target.Handle != 0 && Native.GetForegroundWindow().ToInt64() == target.Handle && !Native.IsIconic(new IntPtr(target.Handle));
+        bool active = target != null && target.Handle != 0 && (Native.GetForegroundWindow().ToInt64() == target.Handle || menu.Visible) && !Native.IsIconic(new IntPtr(target.Handle));
         timer.Interval = active ? 300 : 1200;
         if (!active || target.Height < 400)
         {
+            if (menu.Visible) menu.Close();
             allowVisible = false; if (Visible) Hide();
             SaveState(false); return;
         }
+        // Do not reorder or hide the owner while its close menu is open.
+        if (menu.Visible) { SaveState(true); return; }
         scale = Math.Max(1f, target.Dpi / 96f);
         int width = (int)Math.Round(44 * scale), height = (int)Math.Round(64 * scale);
         Rectangle bounds = new Rectangle(target.Left + (int)Math.Round(8*scale), target.Top + target.Height - (int)Math.Round(174*scale), width,height);
@@ -173,7 +201,7 @@ internal sealed class QuotaForm : Form
         {
             var state = new {visible=Visible && Native.IsWindowVisible(Handle), percent=label.Percent, resetDate=label.Date, resetTime=label.Time, stale=label.Stale, updatedAt=label.UpdatedAt,
                 left=Left,top=Top,width=Width,height=Height, target=target, error=lastError, processId=Process.GetCurrentProcess().Id,
-                windowHandle=Handle.ToInt64(), version="1.2.2", noActivate=true, clickThrough=true};
+                windowHandle=Handle.ToInt64(), version="1.2.3", noActivate=true, clickThrough=false, closeMenuAvailable=true};
             File.WriteAllText(Path.Combine(Program.Runtime,"status.json"),new JavaScriptSerializer().Serialize(state));
             if (shown)
                 using(Bitmap bitmap=new Bitmap(Math.Max(1,Width),Math.Max(1,Height)))
@@ -181,6 +209,11 @@ internal sealed class QuotaForm : Form
         } catch { }
     }
     protected override void OnPaint(PaintEventArgs e) { base.OnPaint(e); DrawLabel(e.Graphics,ClientRectangle,scale,label); }
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+        if (e.Button == MouseButtons.Right) menu.Show(this, new Point(e.X, e.Y));
+    }
     internal static void DrawLabel(Graphics g, Rectangle area, float scale, QuotaLabel data)
     {
         // GDI+ preserves the alpha channel of the buffered, color-keyed layered window.
@@ -209,11 +242,11 @@ internal sealed class QuotaForm : Form
     }
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg==0x0084) {m.Result=new IntPtr(-1);return;}
+        if (m.Msg==0x0084) {m.Result=new IntPtr(1);return;}
         if (m.Msg==0x0021) {m.Result=new IntPtr(3);return;}
         base.WndProc(ref m);
     }
-    protected override void Dispose(bool disposing) { if(disposing)timer.Dispose(); base.Dispose(disposing); }
+    protected override void Dispose(bool disposing) { if(disposing){timer.Dispose();menu.Dispose();} base.Dispose(disposing); }
 }
 
 internal static class Native
