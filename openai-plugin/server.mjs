@@ -8,16 +8,16 @@ const root=fileURLToPath(new URL('.',import.meta.url));
 const annotation={readOnlyHint:false,destructiveHint:false,idempotentHint:true,openWorldHint:false};
 const empty={type:'object',properties:{},additionalProperties:false};
 const tools=[
- {name:'start_quota_text',title:'显示额度小字',description:'在本机安装或启动额度文字浮层。只有用户明确要求随登录自动运行时才传入 autostart:true；否则保留原有启动设置。',inputSchema:{type:'object',properties:{autostart:{type:'boolean'}},additionalProperties:false},annotations:annotation},
- {name:'pause_quota_text',title:'暂停额度小字',description:'暂时关闭本机文字浮层，不删除程序，不改变原有自动启动设置。',inputSchema:empty,annotations:annotation},
- {name:'quota_text_status',title:'查看小字状态',description:'只读查看小字组件的上次额度数据和运行状态；不读取聊天内容。',inputSchema:empty,annotations:{...annotation,readOnlyHint:true}}
+ {name:'start_quota_text',title:'显示GPT/Codex 桌面版额度显示器',description:'在本机安装或启动额度文字浮层。只有用户明确要求随登录自动运行时才传入 autostart:true；否则保留原有启动设置。',inputSchema:{type:'object',properties:{autostart:{type:'boolean'}},additionalProperties:false},annotations:annotation},
+ {name:'pause_quota_text',title:'暂停GPT/Codex 桌面版额度显示器',description:'暂时关闭本机文字浮层，不删除程序，不改变原有自动启动设置。',inputSchema:empty,annotations:annotation},
+ {name:'quota_text_status',title:'查看额度显示器状态',description:'只读查看额度显示器的上次额度数据和运行状态；不读取聊天内容。',inputSchema:empty,annotations:{...annotation,readOnlyHint:true}}
 ];
 const installed=join(process.env.LOCALAPPDATA||'', 'Programs','CodexQuotaText','QuotaText.exe');
 async function execute(file,args){return new Promise((resolve,reject)=>{const cp=spawn(file,args,{windowsHide:true,stdio:'ignore',shell:false});const timer=setTimeout(()=>{cp.kill();reject(new Error('本地操作超时。'));},15000);cp.on('error',()=>{clearTimeout(timer);reject(new Error('无法运行本机组件。'));});cp.on('exit',code=>{clearTimeout(timer);code===0?resolve():reject(new Error('本机组件返回错误。'));});});}
 async function status(){let s=null;try{s=JSON.parse(await readFile(join(process.env.LOCALAPPDATA||'','CodexQuotaText','state','status.json'),'utf8'));}catch{}let running=false;if(s?.processId){try{process.kill(s.processId,0);running=true;}catch{}}
 return {running,displayed:running&&s?.visible===true,remaining:s?.percent??null,resetDate:s?.resetDate??null,resetTime:s?.resetTime??null,timezone:'Asia/Shanghai',fetchedAt:s?.updatedAt||null,stale:s?.stale??null,version:s?.version??null};}
 async function dispatch(m){const p=m.params||{};switch(m.method){
-case 'initialize':return {protocolVersion:p.protocolVersion||'2025-06-18',capabilities:{tools:{}},serverInfo:{name:'quota-text',version:'1.2.1'},instructions:'Windows-only local text overlay. Autostart is opt-in. Never purchase credits or change account settings.'};
+case 'initialize':return {protocolVersion:p.protocolVersion||'2025-06-18',capabilities:{tools:{}},serverInfo:{name:'quota-text',version:'1.2.2'},instructions:'Windows-only local text overlay. Autostart is opt-in. Never purchase credits or change account settings.'};
 case 'ping':return {};
 case 'tools/list':return {tools};
 case 'resources/list':return {resources:[]};
