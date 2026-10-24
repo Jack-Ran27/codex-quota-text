@@ -1,0 +1,8 @@
+*.pdb
+*.exe
+*.log
+state/
+node_modules/
+auth.json
+*.key
+.env
