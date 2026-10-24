@@ -34,7 +34,7 @@ internal static class Setup
                     if(File.Exists(path))File.Delete(path);
                 }
                 if(Directory.Exists(Destination)&&!Directory.EnumerateFileSystemEntries(Destination).Any())Directory.Delete(Destination);
-                Console.WriteLine("已卸载额度小字并取消自动运行。账号和聊天内容未作修改。");
+                Console.WriteLine("已卸载GPT/Codex 桌面版额度显示器并取消自动运行。账号和聊天内容未作修改。");
             }
             else
             {
@@ -43,7 +43,7 @@ internal static class Setup
                 if(!args.Contains("--no-autostart"))
                     using(RegistryKey key=Registry.CurrentUser.CreateSubKey(RunKey))key.SetValue("CodexQuotaText","\""+Path.Combine(Destination,"QuotaText.exe")+"\"",RegistryValueKind.String);
                 Process.Start(new ProcessStartInfo(Path.Combine(Destination,"QuotaText.exe")){UseShellExecute=false,CreateNoWindow=true});
-                Console.WriteLine(args.Contains("--no-autostart")?"额度小字已启动，原有自动启动设置保持不变。":"额度小字已安装。打开 GPT 时会显示，下次登录 Windows 后也会自动运行。");
+                Console.WriteLine(args.Contains("--no-autostart")?"GPT/Codex 桌面版额度显示器已启动，原有自动启动设置保持不变。":"GPT/Codex 桌面版额度显示器已安装。打开 GPT 时会显示，下次登录 Windows 后也会自动运行。");
             }
             return 0;
         }
