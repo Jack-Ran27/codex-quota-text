@@ -17,7 +17,7 @@ async function execute(file,args){return new Promise((resolve,reject)=>{const cp
 async function status(){let s=null;try{s=JSON.parse(await readFile(join(process.env.LOCALAPPDATA||'','CodexQuotaText','state','status.json'),'utf8'));}catch{}let running=false;if(s?.processId){try{process.kill(s.processId,0);running=true;}catch{}}
 return {running,displayed:running&&s?.visible===true,remaining:s?.percent??null,resetDate:s?.resetDate??null,resetTime:s?.resetTime??null,timezone:'Asia/Shanghai',fetchedAt:s?.updatedAt||null,stale:s?.stale??null,version:s?.version??null};}
 async function dispatch(m){const p=m.params||{};switch(m.method){
-case 'initialize':return {protocolVersion:p.protocolVersion||'2025-06-18',capabilities:{tools:{}},serverInfo:{name:'quota-text',version:'1.2.2'},instructions:'Windows-only local text overlay. Autostart is opt-in. Never purchase credits or change account settings.'};
+case 'initialize':return {protocolVersion:p.protocolVersion||'2025-06-18',capabilities:{tools:{}},serverInfo:{name:'quota-text',version:'1.2.3'},instructions:'Windows-only local text overlay. Autostart is opt-in. Never purchase credits or change account settings.'};
 case 'ping':return {};
 case 'tools/list':return {tools};
 case 'resources/list':return {resources:[]};
