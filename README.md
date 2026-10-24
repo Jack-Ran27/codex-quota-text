@@ -2,9 +2,9 @@
 
 在 GPT 桌面版左下角看一眼，就知道还剩多少额度、什么时候重置。
 
-这是一个 Windows 本地小组件，当前为 **v1.2.2-beta.1 测试版**。它不占任务栏，也不用单独打开看板。
+这是一个 Windows 本地小组件，当前为 **v1.2.3-beta.1 测试版**。它不占任务栏，也不用单独打开看板。
 
-[下载 Windows 安装包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.2-beta.1/GPT-Codex-Quota-Display-v1.2.2-beta.1-Windows-x64.zip) · [完整源码包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.2-beta.1/GPT-Codex-Quota-Display-v1.2.2-beta.1-Source.zip) · [版本页面](https://github.com/Jack-Ran27/codex-quota-text/releases)
+[下载 Windows 安装包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.3-beta.1/GPT-Codex-Quota-Display-v1.2.3-beta.1-Windows-x64.zip) · [完整源码包](https://github.com/Jack-Ran27/codex-quota-text/releases/download/v1.2.3-beta.1/GPT-Codex-Quota-Display-v1.2.3-beta.1-Source.zip) · [版本页面](https://github.com/Jack-Ran27/codex-quota-text/releases)
 
 显示示例（示意数据）：
 
@@ -19,7 +19,7 @@
 
 - 显示本机 Codex 登录账号的剩余比例和重置时间。
 - 页面在前台时每分钟刷新，切到其他程序或最小化时隐藏。
-- 随 GPT 窗口移动，文字不接收鼠标点击，也不抢输入焦点。
+- 随 GPT 窗口移动，平时不抢输入焦点；右键点击文字区域可打开关闭菜单。
 - 安装后随当前用户登录 Windows 自动运行，等 GPT 打开再显示。
 
 ## 使用要求
@@ -33,6 +33,10 @@ Windows x64、.NET Framework 4.8，以及已登录的 GPT/Codex 桌面版。额�
 1. 解压完整的发行包，保留 `app` 文件夹。
 2. 双击 `安装.cmd`。它会安装到当前用户的本地程序目录，并添加当前用户的登录启动项，不需要管理员权限。
 3. 打开 GPT，查看左下角文字。
+
+关闭时，右键点击额度文字区域，选择“关闭本次显示”。如不希望以后自动运行，选择“取消自动启动并关闭”。
+
+Windows 开始菜单中也提供“关闭额度显示器”和“启动额度显示器”入口，关闭后可随时再次启动。“关闭本次显示”会退出本工具，本次重新打开 GPT 不会自动恢复；登录启动项仍保留，下一次登录 Windows 后会再运行。
 
 卸载时，在发行包中双击 `卸载.cmd`。它只删除本工具的已知程序文件和匹配的启动项，不修改 GPT 账号或聊天记录。工具在本地留下的运行状态文件会保留。
 
