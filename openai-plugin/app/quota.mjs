@@ -59,7 +59,7 @@ export function readAccountQuota() {
         send({id:message.id, error:{code:-32601,message:'This read-only client does not handle server requests.'}});
       }
     });
-    send({id:1, method:'initialize', params:{clientInfo:{name:'local_quota_text',title:'GPT/Codex Desktop Quota Display',version:'1.2.3'}}});
+    send({id:1, method:'initialize', params:{clientInfo:{name:'local_quota_text',title:'GPT/Codex Desktop Quota Display',version:'1.2.4'}}});
   });
 }
 
