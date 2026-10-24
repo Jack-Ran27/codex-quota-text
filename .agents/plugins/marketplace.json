@@ -1,5 +1,5 @@
 {
   "name": "quota-text-local",
-  "interface": {"displayName":"Quota Text local draft"},
+  "interface": {"displayName":"GPT/Codex 桌面版额度显示器（本地测试）"},
   "plugins":[{"name":"quota-text","source":{"source":"local","path":"./openai-plugin"},"policy":{"installation":"AVAILABLE","authentication":"ON_USE"},"category":"Productivity"}]
 }
