@@ -12,8 +12,8 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-[assembly: System.Reflection.AssemblyVersion("1.2.3.0")]
-[assembly: System.Reflection.AssemblyFileVersion("1.2.3.0")]
+[assembly: System.Reflection.AssemblyVersion("1.2.4.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.2.4.0")]
 
 internal static class Program
 {
@@ -124,6 +124,7 @@ internal sealed class QuotaForm : Form
     private readonly System.Windows.Forms.Timer timer;
     private readonly EventWaitHandle stop;
     private readonly ContextMenuStrip menu;
+    private IntPtr menuReturnWindow;
     private QuotaLabel label = new QuotaLabel();
     private DateTime nextRead = DateTime.MinValue;
     private DateTime lastState = DateTime.MinValue;
@@ -142,9 +143,10 @@ internal sealed class QuotaForm : Form
         Cursor = Cursors.Hand;
         AccessibleName = Program.ProductName;
         AccessibleDescription = "右键打开菜单，可关闭显示或取消自动启动。";
-        menu = new ContextMenuStrip();
+        menu = new ContextMenuStrip { AutoClose = true };
+        menu.Closed += MenuClosed;
         menu.Items.Add(Program.ProductName).Enabled = false;
-        menu.Items.Add("版本 1.2.3").Enabled = false;
+        menu.Items.Add("版本 1.2.4").Enabled = false;
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("关闭本次显示", null, delegate { Close(); });
         menu.Items.Add("取消自动启动并关闭", null, delegate {
@@ -201,7 +203,7 @@ internal sealed class QuotaForm : Form
         {
             var state = new {visible=Visible && Native.IsWindowVisible(Handle), percent=label.Percent, resetDate=label.Date, resetTime=label.Time, stale=label.Stale, updatedAt=label.UpdatedAt,
                 left=Left,top=Top,width=Width,height=Height, target=target, error=lastError, processId=Process.GetCurrentProcess().Id,
-                windowHandle=Handle.ToInt64(), version="1.2.3", noActivate=true, clickThrough=false, closeMenuAvailable=true};
+                windowHandle=Handle.ToInt64(), version="1.2.4", noActivate=true, clickThrough=false, closeMenuAvailable=true};
             File.WriteAllText(Path.Combine(Program.Runtime,"status.json"),new JavaScriptSerializer().Serialize(state));
             if (shown)
                 using(Bitmap bitmap=new Bitmap(Math.Max(1,Width),Math.Max(1,Height)))
@@ -212,7 +214,25 @@ internal sealed class QuotaForm : Form
     protected override void OnMouseUp(MouseEventArgs e)
     {
         base.OnMouseUp(e);
-        if (e.Button == MouseButtons.Right) menu.Show(this, new Point(e.X, e.Y));
+        if (e.Button == MouseButtons.Right)
+        {
+            menuReturnWindow = Native.GetForegroundWindow();
+            // A popup from a no-activate tool window must first make its owner
+            // foreground; otherwise Windows may not dismiss it on outside clicks.
+            Native.SetForegroundWindow(Handle);
+            menu.Show(this, new Point(e.X, e.Y));
+        }
+        else if (menu.Visible) menu.Close(ToolStripDropDownCloseReason.AppClicked);
+    }
+    private void MenuClosed(object sender, ToolStripDropDownClosedEventArgs e)
+    {
+        IntPtr previous = menuReturnWindow;
+        menuReturnWindow = IntPtr.Zero;
+        if (!IsDisposed && IsHandleCreated) Native.PostMessage(Handle, 0, IntPtr.Zero, IntPtr.Zero);
+        // Outside clicks keep focus on the window the user actually clicked.
+        if ((e.CloseReason == ToolStripDropDownCloseReason.Keyboard || e.CloseReason == ToolStripDropDownCloseReason.ItemClicked)
+            && Native.GetForegroundWindow() == Handle && previous != Handle && Native.IsWindow(previous))
+            Native.SetForegroundWindow(previous);
     }
     internal static void DrawLabel(Graphics g, Rectangle area, float scale, QuotaLabel data)
     {
@@ -242,6 +262,8 @@ internal sealed class QuotaForm : Form
     }
     protected override void WndProc(ref Message m)
     {
+        if (m.Msg==0x001C && m.WParam==IntPtr.Zero && menu!=null && menu.Visible)
+            menu.Close(ToolStripDropDownCloseReason.AppFocusChange);
         if (m.Msg==0x0084) {m.Result=new IntPtr(1);return;}
         if (m.Msg==0x0021) {m.Result=new IntPtr(3);return;}
         base.WndProc(ref m);
@@ -256,6 +278,9 @@ internal static class Native
     internal sealed class Target { public long Handle; public int ProcessId,Left,Top,Width,Height,Dpi; }
     [DllImport("user32.dll")] internal static extern bool SetProcessDpiAwarenessContext(IntPtr context);
     [DllImport("user32.dll")] internal static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] internal static extern bool SetForegroundWindow(IntPtr hwnd);
+    [DllImport("user32.dll")] internal static extern bool IsWindow(IntPtr hwnd);
+    [DllImport("user32.dll")] internal static extern bool PostMessage(IntPtr hwnd,uint message,IntPtr wParam,IntPtr lParam);
     [DllImport("user32.dll")] internal static extern bool IsWindowVisible(IntPtr hwnd);
     [DllImport("user32.dll")] internal static extern bool IsIconic(IntPtr hwnd);
     [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr hwnd,out RECT rect);
